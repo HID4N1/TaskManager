@@ -1,0 +1,43 @@
+@model TaskManager.Models.Project
+@{
+    ViewData["Title"] = "Project Details";
+}
+
+<div class="page-header">
+    <h1 class="page-title">Project Details</h1>
+</div>
+
+<div class="card">
+    <dl class="details-grid">
+        <dt>Name</dt>
+        <dd>@Model.Name</dd>
+
+        <dt>Description</dt>
+        <dd>@Model.Description</dd>
+
+        <dt>Start Date</dt>
+        <dd>@Model.StartDate.ToString("yyyy-MM-dd")</dd>
+
+        <dt>End Date</dt>
+        <dd>@(Model.EndDate?.ToString("yyyy-MM-dd") ?? "N/A")</dd>
+
+        <dt>Status</dt>
+        <dd>@Model.Status</dd>
+
+        <dt>Creator</dt>
+        <dd>@Model.Creator?.Email</dd>
+
+        <dt>Manager</dt>
+        <dd>@(Model.Manager?.Email ?? "Not Assigned")</dd>
+    </dl>
+</div>
+
+<div class="action-buttons">
+    <a asp-controller="Task" asp-action="Kanban" asp-route-projectId="@Model.Id" class="btn btn-success">View Kanban Board</a>
+    @if (User.IsInRole("ADMIN") || User.IsInRole("MANAGER"))
+    {
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+    }
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>
+

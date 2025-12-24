@@ -1,0 +1,17 @@
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome to TaskManager</h1>
+    <p>A Scrum-based Task Management System</p>
+    
+    @if (!User.Identity?.IsAuthenticated == true)
+    {
+        <div class="mt-4 d-flex gap-3 justify-content-center">
+            <a asp-controller="Auth" asp-action="Login" class="btn btn-primary btn-lg">Login</a>
+            <a asp-controller="Auth" asp-action="Signup" class="btn btn-outline-primary btn-lg">Sign Up</a>
+        </div>
+    }
+</div>
+

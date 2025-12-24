@@ -1,0 +1,41 @@
+@model Dictionary<TaskManager.Models.Enums.TaskStatus, int>
+@{
+    ViewData["Title"] = "Task Count by Status";
+}
+
+<div class="page-header">
+    <h1 class="page-title">Task Count by Status</h1>
+    @if (ViewBag.ProjectName != null)
+    {
+        <p class="page-subtitle">Project: @ViewBag.ProjectName</p>
+    }
+</div>
+
+<div class="table-container">
+    <table class="table">
+    <thead>
+        <tr>
+            <th>Status</th>
+            <th>Count</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Key</td>
+                <td>@item.Value</td>
+            </tr>
+        }
+    </tbody>
+    </table>
+</div>
+
+<div class="mt-3">
+    <a asp-action="Index" class="btn btn-secondary">Back to Reports</a>
+    @if (ViewBag.ProjectId != null)
+    {
+        <a asp-controller="Project" asp-action="Index" class="btn btn-secondary">Back to Projects</a>
+    }
+</div>
+

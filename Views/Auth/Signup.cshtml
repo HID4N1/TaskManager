@@ -1,0 +1,74 @@
+@model TaskManager.ViewModels.SignupViewModel
+@{
+    ViewData["Title"] = "Sign Up";
+}
+
+<div class="auth-container">
+    <div class="auth-card">
+        <h2>Create Account</h2>
+        <p class="subtitle">Join TaskManager today</p>
+        
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        
+        <form asp-action="Signup" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            
+            <div class="form-group mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+                <small class="form-text text-muted">Minimum 4 characters</small>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="ConfirmPassword" class="form-label"></label>
+                <input asp-for="ConfirmPassword" class="form-control" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Role" class="form-label"></label>
+                <select asp-for="Role" class="form-control" required>
+                    <option value="">-- Select Role --</option>
+                    <option value="@Role.MANAGER">MANAGER - Can create and manage projects and tasks</option>
+                    <option value="@Role.MEMBER" selected>MEMBER - Can view and update assigned tasks</option>
+                </select>
+                <span asp-validation-for="Role" class="text-danger"></span>
+                <small class="form-text text-muted">
+                    <strong>Note:</strong> Only MANAGER and MEMBER roles are available for self-registration. 
+                    ADMIN accounts must be created by existing administrators.
+                </small>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary btn-full-width">Sign Up</button>
+            </div>
+        </form>
+        
+        <div class="auth-divider"></div>
+        
+        <div class="text-center">
+            <p class="text-muted mb-2">
+                Already have an account?
+            </p>
+            <a asp-action="Login" class="btn btn-outline-primary btn-full-width">Login</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

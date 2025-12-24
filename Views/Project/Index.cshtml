@@ -1,0 +1,60 @@
+@model IEnumerable<TaskManager.Models.Project>
+@{
+    ViewData["Title"] = "Projects";
+}
+
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">Projects</h1>
+            <p class="page-subtitle">Manage your Scrum projects</p>
+        </div>
+        @if (User.IsInRole("ADMIN") || User.IsInRole("MANAGER"))
+        {
+            <a asp-action="Create" class="btn btn-primary">Create New Project</a>
+        }
+    </div>
+</div>
+
+@await Html.PartialAsync("_Messages")
+
+<div class="table-container">
+    <table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Status</th>
+            <th>Creator</th>
+            <th>Manager</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Description</td>
+                <td>@item.StartDate.ToString("yyyy-MM-dd")</td>
+                <td>@(item.EndDate?.ToString("yyyy-MM-dd") ?? "N/A")</td>
+                <td>@item.Status</td>
+                <td>@item.Creator?.Email</td>
+                <td>@(item.Manager?.Email ?? "Not Assigned")</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
+                    <a asp-controller="Task" asp-action="Kanban" asp-route-projectId="@item.Id" class="btn btn-sm btn-success">Kanban</a>
+                    @if (User.IsInRole("ADMIN") || User.IsInRole("MANAGER"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+    </table>
+</div>
+

@@ -1,0 +1,46 @@
+@model IEnumerable<TaskManager.Models.TaskItem>
+@{
+    ViewData["Title"] = "Tasks";
+}
+
+<div class="page-header">
+    <h1 class="page-title">All Tasks</h1>
+</div>
+
+<div class="table-container">
+    <table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Project</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Assigned To</th>
+            <th>Due Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Title</td>
+                <td>@item.Project?.Name</td>
+                <td>@item.Priority</td>
+                <td>@item.Status</td>
+                <td>@(item.AssignedUser?.Email ?? "Unassigned")</td>
+                <td>@(item.DueDate?.ToString("yyyy-MM-dd") ?? "N/A")</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                    @if (User.IsInRole("ADMIN") || User.IsInRole("MANAGER"))
+                    {
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+    </table>
+</div>
+

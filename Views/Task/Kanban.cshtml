@@ -1,0 +1,83 @@
+@model TaskManager.ViewModels.KanbanViewModel
+@{
+    ViewData["Title"] = "Kanban Board";
+}
+
+<div class="page-header">
+    <h1 class="page-title">Kanban Board</h1>
+    <p class="page-subtitle">@Model.ProjectName</p>
+</div>
+
+@if (User.IsInRole("ADMIN") || User.IsInRole("MANAGER"))
+{
+    <div class="mb-4">
+        <a asp-action="Create" asp-route-projectId="@Model.ProjectId" class="btn btn-primary">Create New Task</a>
+    </div>
+}
+
+<div class="kanban-container">
+    @foreach (var statusGroup in Model.TasksByStatus)
+    {
+        var statusClass = statusGroup.Key.ToString().ToLower().Replace("_", "-");
+        <div class="kanban-column status-@statusClass">
+            <div class="kanban-column-header">
+                @statusGroup.Key
+                <span class="task-count">(@statusGroup.Value.Count)</span>
+            </div>
+            <div class="kanban-column-body">
+                @foreach (var task in statusGroup.Value)
+                {
+                    <div class="kanban-task-card">
+                        <div class="task-title">@task.Title</div>
+                        @if (!string.IsNullOrEmpty(task.Description))
+                        {
+                            <div class="task-description">
+                                @(task.Description.Length > 80 ? task.Description.Substring(0, 80) + "..." : task.Description)
+                            </div>
+                        }
+                        <div class="task-meta">
+                            <div class="task-priority-badge priority-@task.Priority.ToString().ToLower()">
+                                @task.Priority
+                            </div>
+                            <div class="task-meta-item">
+                                <strong>Assigned:</strong> @(task.AssignedUser?.Email ?? "Unassigned")
+                            </div>
+                            @if (task.DueDate.HasValue)
+                            {
+                                <div class="task-meta-item">
+                                    <strong>Due:</strong> @task.DueDate.Value.ToString("MMM dd, yyyy")
+                                </div>
+                            }
+                        </div>
+                        <div class="task-actions">
+                            <a asp-action="Details" asp-route-id="@task.Id" class="btn btn-info btn-sm">View</a>
+                            <a asp-action="Edit" asp-route-id="@task.Id" class="btn btn-secondary btn-sm">Edit</a>
+                        </div>
+                        @if (User.IsInRole("ADMIN") || User.IsInRole("MANAGER") || (User.IsInRole("MEMBER") && task.AssignedUserId == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value))
+                        {
+                            <div class="mt-2">
+                                <form asp-action="UpdateStatus" method="post">
+                                    <input type="hidden" name="taskId" value="@task.Id" />
+                                    <select name="status" onchange="this.form.submit()" class="form-select form-select-sm">
+                                        @foreach (TaskStatus status in Enum.GetValues<TaskStatus>())
+                                        {
+                                            <option value="@status" selected="@(status == task.Status)">@status</option>
+                                        }
+                                    </select>
+                                </form>
+                            </div>
+                        }
+                    </div>
+                }
+                @if (!statusGroup.Value.Any())
+                {
+                    <div class="empty-column">No tasks</div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<div class="mt-4">
+    <a asp-controller="Project" asp-action="Index" class="btn btn-secondary">Back to Projects</a>
+</div>

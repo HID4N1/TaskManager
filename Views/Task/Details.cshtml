@@ -1,0 +1,80 @@
+@model TaskManager.Models.TaskItem
+@{
+    ViewData["Title"] = "Task Details";
+}
+
+<div class="page-header">
+    <h1 class="page-title">Task Details</h1>
+</div>
+
+<div class="card">
+    <dl class="details-grid">
+        <dt>Title</dt>
+        <dd>@Model.Title</dd>
+
+        <dt>Description</dt>
+        <dd>@Model.Description</dd>
+
+        <dt>Priority</dt>
+        <dd>@Model.Priority</dd>
+
+        <dt>Status</dt>
+        <dd>@Model.Status</dd>
+
+        <dt>Project</dt>
+        <dd>@Model.Project?.Name</dd>
+
+        <dt>Assigned To</dt>
+        <dd>@(Model.AssignedUser?.Email ?? "Unassigned")</dd>
+
+        <dt>Created At</dt>
+        <dd>@Model.CreatedAt.ToString("MMM dd, yyyy HH:mm")</dd>
+
+        <dt>Due Date</dt>
+        <dd>@(Model.DueDate?.ToString("MMM dd, yyyy") ?? "N/A")</dd>
+
+        <dt>Estimated Hours</dt>
+        <dd>@(Model.EstimatedHours?.ToString() ?? "N/A")</dd>
+
+        <dt>Real Hours</dt>
+        <dd>@(Model.RealHours?.ToString() ?? "N/A")</dd>
+    </dl>
+</div>
+
+<div class="card mt-3">
+    <div class="card-header">Comments</div>
+    <div class="comments-section">
+        @foreach (var comment in Model.Comments.OrderBy(c => c.CreatedAt))
+        {
+            <div class="comment-item">
+                <p class="comment-content">@comment.Content</p>
+                <small class="comment-meta">
+                    By @comment.Author?.Email on @comment.CreatedAt.ToString("MMM dd, yyyy HH:mm")
+                    @if (comment.AuthorId == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value || User.IsInRole("ADMIN") || User.IsInRole("MANAGER"))
+                    {
+                        <form asp-controller="Comment" asp-action="Delete" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@comment.Id" />
+                            <button type="submit" class="btn btn-sm btn-danger comment-delete-btn">Delete</button>
+                        </form>
+                    }
+                </small>
+            </div>
+        }
+        
+        <form asp-controller="Comment" asp-action="Create" method="post">
+            <input type="hidden" name="taskId" value="@Model.Id" />
+            <div class="form-group">
+                <label for="content" class="form-label">Add Comment</label>
+                <textarea name="content" class="form-control" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Comment</button>
+        </form>
+    </div>
+</div>
+
+<div class="action-buttons">
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+    <a asp-action="Kanban" asp-route-projectId="@Model.ProjectId" class="btn btn-success">Back to Kanban</a>
+    <a asp-controller="Project" asp-action="Index" class="btn btn-secondary">Back to Projects</a>
+</div>
+
